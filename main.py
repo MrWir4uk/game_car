@@ -8,10 +8,12 @@ font.init()
 font1 = font.SysFont("Kristen ITC", 100)
 font2 = font.SysFont("Impact", 50)
 game_over_text = font1.render("GAME OVER", True, (150, 0, 0))
+restart_text = font2.render('PRESS RESTART "R" ', True, (150,0,0))
+
 mixer.init()
 mixer.music.load('sound.ogg')
 mixer.music.play()
-mixer.music.set_volume(0.2)
+mixer.music.set_volume(0.9)
 
 enemy_speed = 4 
 
@@ -39,6 +41,7 @@ bg_y2 = -HEIGHT
 player_img = image.load("car.png")
 enemy_img = image.load("car_enemy.png")
 all_sprites = sprite.Group()
+all_enemy = sprite.Group()
 
 
 class Sprite(sprite.Sprite):
@@ -57,14 +60,15 @@ class Enemy(Sprite):
         super().__init__(sprite_img, width, height, rand_x, -200)
         self.damage = 100
         self.speed = enemy_speed
-     
-
+        all_enemy.add(self)
+      
 
     def update(self):
         self.rect.y += player.bg_speed + self.speed
         if self.rect.y > HEIGHT:
             self.kill()
-
+                
+       
 
 
 class Player(Sprite):
@@ -73,6 +77,7 @@ class Player(Sprite):
         self.hp = 100
         self.score = 0
         self.speed = 2
+        self.speed_x = 10
         self.bg_speed = 5
         self.max_speed = 20
         self.car_line = 0
@@ -92,11 +97,20 @@ class Player(Sprite):
         if key_pressed[K_a] and self.rect.x > 0:
             if self.car_line > 0:
                 self.car_line -= 1
-            self.rect.x = lines_cords[self.car_line] 
+            if self.rect.x > lines_cords[self.car_line]:
+                self.rect.x -= self.speed_x
+            
+            # self.rect.x = lines_cords[self.car_line] 
         if key_pressed[K_d] and self.rect.right < WIDTH:
             if self.car_line < 3:
                 self.car_line += 1
-            self.rect.x = lines_cords[self.car_line] 
+            if self.rect.x < lines_cords[self.car_line]:
+                self.rect.x += self.speed_x
+
+        enemy_collide = sprite.spritecollide(self, all_enemy, False, sprite.collide_mask)
+        if len(enemy_collide) > 0:
+            self.hp -= 100
+            
             
 
 
@@ -120,6 +134,15 @@ while run:
             if e.key == K_ESCAPE:
                 run = False
                 sys.exit()
+            
+            if finish and e.key == K_r:
+                finish = False
+                for s in all_sprites:
+                    s.kill()
+                player = Player(player_img, 100, 150, 300, 300)
+
+
+
 
         
     window.blit(bg,(0,bg_y1))
@@ -142,28 +165,27 @@ while run:
             enemy1 = Enemy(enemy_img, 100,150)#створюємо нового ворога
 
             enemy_spawn_time = time.get_ticks() #оновлюємо час появи ворога
-            spawn_interval = randint(500, 1500) 
-        if  now - timer > 5000:
-            enemy_speed += 30
+            spawn_interval = randint(500, 2500) 
+        if  now - timer > 15000:
+            enemy_speed += 1.5
             timer = time.get_ticks()
         
         
     
-            
 
-            # ollide_list = sprite.spritecollide(player, enemys, True, sprite.collide_mask)
-            # if len(collide_list) > 0:
-            #     finish = True
+            collide_list = sprite.spritecollide(player, all_enemy, True, sprite.collide_mask)
+            if len(collide_list) > 0:
+                finish = True
 
 
 
         all_sprites.draw(window)
-        # window.blit(score_text,(30,30))
+        #window.blit(score_text,(30,30))
         if not finish:
             all_sprites.update()
-        # if finish:
-        #     window.blit(game_over_text, (300,500))
-        #     window.blit(restart_text, (500,600))
+    if finish:
+        window.blit(game_over_text, (300,500))
+        window.blit(restart_text, (500,600))
     #game_over_text,WIDTH/2 - game_over_text.get_width()/2, HEIGHT/2 - game_over_text.get_height()/2
 
     display.update()
