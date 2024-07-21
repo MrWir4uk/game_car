@@ -40,8 +40,10 @@ bg_y2 = -HEIGHT
 
 player_img = image.load("car.png")
 enemy_img = image.load("car_enemy.png")
+all_coins = sprite.Group()
 all_sprites = sprite.Group()
 all_enemy = sprite.Group()
+
 
 
 class Sprite(sprite.Sprite):
@@ -68,6 +70,20 @@ class Enemy(Sprite):
         if self.rect.y > HEIGHT:
             self.kill()
                 
+
+class Coin(Sprite):
+    def __init__(self, sprite_img, width, height):
+        rand_x = lines_cords[randint(0,3)]
+        super().__init__(sprite_img, width, height, rand_x, -200)
+  
+        self.speed = enemy_speed
+        all_coins.add(self)
+      
+
+    def update(self):
+        self.rect.y += player.bg_speed
+        if self.rect.y > HEIGHT:
+            self.kill()
        
 
 
@@ -117,11 +133,15 @@ class Player(Sprite):
 player = Player(player_img, 100,150,970,600)
 enemy = Enemy(enemy_img,100,150)
 
+score_text = font2.render(f"Score:{player.score}", True, (255, 255, 255))
 
 start_time = time.get_ticks()
 timer = start_time
 enemy_spawn_time = time.get_ticks()
+coin_spawn_time = time.get_ticks()
 spawn_interval = randint(500, 3000)
+spawn_interval_coin = randint(500, 3000)
+
 finish = False
 run = True
 while run:
@@ -163,15 +183,20 @@ while run:
         now = time.get_ticks() #поточний час
         if now - enemy_spawn_time > spawn_interval: #Якщо від появи останнього ворога пройшло <1 секундни
             enemy1 = Enemy(enemy_img, 100,150)#створюємо нового ворога
-
             enemy_spawn_time = time.get_ticks() #оновлюємо час появи ворога
             spawn_interval = randint(500, 2500) 
+            
+
         if  now - timer > 15000:
             enemy_speed += 1.5
             timer = time.get_ticks()
         
-        
-    
+        if now - coin_spawn_time > spawn_interval_coin:
+            all_coins = sprite.Group()
+            coin_spawn_time = time.get_ticks()
+            spawn_interval_coin = randint(500, 2500) 
+
+
 
             collide_list = sprite.spritecollide(player, all_enemy, True, sprite.collide_mask)
             if len(collide_list) > 0:
