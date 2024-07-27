@@ -40,6 +40,7 @@ bg_y2 = -HEIGHT
 
 player_img = image.load("car.png")
 enemy_img = image.load("car_enemy.png")
+coin_img = image.load("coin.png")
 all_coins = sprite.Group()
 all_sprites = sprite.Group()
 all_enemy = sprite.Group()
@@ -126,7 +127,11 @@ class Player(Sprite):
         enemy_collide = sprite.spritecollide(self, all_enemy, False, sprite.collide_mask)
         if len(enemy_collide) > 0:
             self.hp -= 100
-            
+
+        coin_collide = sprite.spritecollide(self, all_coins, False, sprite.collide_mask)
+        if len(coin_collide) > 0:
+            self.hp -= 100
+
             
 
 
@@ -149,8 +154,8 @@ while run:
         if e.type == QUIT:
             run = False
         if e.type == KEYDOWN:
-            # if start_screen:
-            #     start_screen = False
+           #if start_screen:
+                #start_screen = False
             if e.key == K_ESCAPE:
                 run = False
                 sys.exit()
@@ -193,14 +198,12 @@ while run:
         
         if now - coin_spawn_time > spawn_interval_coin:
             all_coins = sprite.Group()
+            coin = Coin(coin_img,100,100)
             coin_spawn_time = time.get_ticks()
             spawn_interval_coin = randint(500, 2500) 
 
 
 
-            collide_list = sprite.spritecollide(player, all_enemy, True, sprite.collide_mask)
-            if len(collide_list) > 0:
-                finish = True
 
 
 
