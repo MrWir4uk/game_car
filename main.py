@@ -216,9 +216,9 @@ while run:
             spawn_interval = randint(500, 2500) 
             
 
-        if  now - timer > 15000:
-            enemy_speed += 1.5
-            timer = time.get_ticks()
+        if  now - timer > 15000: #ми робимо перевірку якщо проходить 15 секунд 
+            enemy_speed += 1.5 #то ми збільшимо швикість 
+            timer = time.get_ticks() #ми використовуємо функцію тайм гет тік
         
         if now - coin_spawn_time > spawn_interval_coin:
             coin = Coin(coin_img,100,100)
@@ -226,7 +226,8 @@ while run:
             spawn_interval_coin = randint(500, 2500) 
 
 
-
+#Мої в грі треба довго грати і збирати монети і обіджати перешколи 
+#суть гри побити свій рекорд він збільшується за кожну монетку
 
 
 
