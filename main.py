@@ -126,21 +126,23 @@ class Player(Sprite):
                 self.car_line -= 1
             if self.rect.x > lines_cords[self.car_line]:
                 self.rect.x -= self.speed_x
-                #if self.rect.x < lines_cords[self.car_line] + 100:
-                    # self.angle -= 1
-                    # if self.angle < 30:
-                    #     self.angle += 1
+                if self.rect.x < lines_cords[self.car_line] + 100:
+                    if self.angle < 30:
+                        self.angle += 5
             
             
             # self.rect.x = lines_cords[self.car_line] 
-        if key_pressed[K_d] and self.rect.right < WIDTH:
+        elif key_pressed[K_d] and self.rect.right < WIDTH:
             if self.car_line < 3:
                 self.car_line += 1
             if self.rect.x < lines_cords[self.car_line]:
                 self.rect.x += self.speed_x
-        #         if self.angle > -30:
-        #             self.angle -= 1
-        # self.image = transform.rotate(self.original, self.angle)
+                if self.angle > -30:
+                     self.angle -= 5
+        else:
+            self.angle = 0
+            
+        self.image = transform.rotate(self.original, self.angle)
 
         enemy_collide = sprite.spritecollide(self, all_enemy, False, sprite.collide_mask)
         if len(enemy_collide) > 0:
@@ -166,8 +168,8 @@ start_time = time.get_ticks()
 timer = start_time
 enemy_spawn_time = time.get_ticks()
 coin_spawn_time = time.get_ticks()
-spawn_interval = randint(500, 3000)
-spawn_interval_coin = randint(500, 3000)
+spawn_interval = randint(500, 1500)
+spawn_interval_coin = randint(500, 1500)
 start = False
 finish = False
 run = True
